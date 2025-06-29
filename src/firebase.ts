@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyBqhN6E6tBcYyNnpk5XA1W2mgiO1TpM2ZE",
+  apiKey: "",
   authDomain: "budget-fire-2137.firebaseapp.com",
   projectId: "budget-fire-2137",
   storageBucket: "budget-fire-2137.firebasestorage.app",
