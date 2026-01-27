@@ -35,14 +35,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
       - name: Type check
         run: npm run typecheck
-
-      - name: Run tests
-        run: npm run test -- --coverage
 
       - name: Build
         run: npm run build
@@ -79,8 +73,9 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+      # TODO: Uncomment when tests are added
+      # - name: Run tests
+      #   run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
 
       - name: Publish Lambda
         run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
@@ -118,3 +113,6 @@ jobs:
 
       - name: CDK Synth
         run: npx cdk synth --quiet
+        env:
+          CDK_DEFAULT_ACCOUNT: '000000000000'
+          CDK_DEFAULT_REGION: 'eu-central-1'

@@ -11,10 +11,11 @@ on:
         options:
           - dev
           - prod
-  push:
-    branches: [main]
-    paths:
-      - 'src/web/**'
+  # Uncomment when AWS is configured:
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'src/web/**'
 
 permissions:
   id-token: write
