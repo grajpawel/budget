@@ -9,6 +9,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import * as path from 'path';
+import * as fs from 'fs';
 
 interface ApiStackProps extends cdk.StackProps {
   environment: string;
@@ -24,12 +25,18 @@ export class ApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
+    // Determine Lambda code source
+    const publishPath = path.join(__dirname, '../../src/api/publish');
+    const lambdaCode = fs.existsSync(publishPath)
+      ? lambda.Code.fromAsset(publishPath)
+      : lambda.Code.fromInline('// Placeholder for CDK synth validation');
+
     // Lambda Function
     this.lambdaFunction = new lambda.Function(this, 'BudgetApiFunction', {
       functionName: `budget-api-${props.environment}`,
-      runtime: lambda.Runtime.DOTNET_8,
-      handler: 'Budget.Api',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../src/api/publish')),
+      runtime: fs.existsSync(publishPath) ? lambda.Runtime.DOTNET_8 : lambda.Runtime.NODEJS_20_X,
+      handler: fs.existsSync(publishPath) ? 'Budget.Api' : 'index.handler',
+      code: lambdaCode,
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       architecture: lambda.Architecture.X86_64,
