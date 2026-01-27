@@ -1,0 +1,68 @@
+name: Deploy Web
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+  push:
+    branches: [main]
+    paths:
+      - 'src/web/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  NODE_VERSION: '20.x'
+  AWS_REGION: 'eu-central-1'
+
+jobs:
+  deploy:
+    name: Deploy Web to ${{ github.event.inputs.environment || 'dev' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        working-directory: src/web
+        run: npm ci
+
+      - name: Build
+        working-directory: src/web
+        run: npm run build
+        env:
+          VITE_AWS_REGION: ${{ env.AWS_REGION }}
+          VITE_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+          VITE_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+          VITE_API_URL: ${{ secrets.API_GATEWAY_URL }}
+
+      - name: Deploy to Amplify
+        run: |
+          aws amplify start-deployment \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name ${{ github.event.inputs.environment || 'dev' }} \
+            --source-url "s3://${{ secrets.DEPLOY_BUCKET }}/web-${{ github.sha }}.zip"

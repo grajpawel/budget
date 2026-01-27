@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.csdevkit",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "amazonwebservices.aws-toolkit-vscode",
+    "amazonwebservices.amazon-q-vscode",
+    "editorconfig.editorconfig",
+    "github.vscode-github-actions"
+  ]
+}
