@@ -6,6 +6,9 @@ build/
 out/
 publish/
 
+# But don't ignore CDK bin folder
+!infra/bin/
+
 # Dependencies
 node_modules/
 packages/
