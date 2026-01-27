@@ -113,9 +113,22 @@ jobs:
 
       - name: Build TypeScript
         run: |
-          npm run build
-          echo "Build completed. Checking output..."
-          ls -la dist/bin/ || echo "dist/bin/ not found"
+          echo "=== TypeScript version ==="
+          npx tsc --version
+          echo "=== Current directory ==="
+          pwd
+          echo "=== Directory structure before build ==="
+          ls -la
+          echo "=== Source files ==="
+          find bin lib -name "*.ts" 2>/dev/null || echo "No source files found"
+          echo "=== tsconfig.json content ==="
+          cat tsconfig.json
+          echo "=== Running tsc with verbose output ==="
+          npx tsc --listEmittedFiles 2>&1 || true
+          echo "=== Directory structure after build ==="
+          ls -la
+          echo "=== Checking dist directory ==="
+          ls -laR dist/ 2>/dev/null || echo "dist/ directory not found"
 
       - name: CDK Synth
         run: npx cdk synth --quiet
