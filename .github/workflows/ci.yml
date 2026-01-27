@@ -112,7 +112,10 @@ jobs:
         run: npm ci
 
       - name: Build TypeScript
-        run: npm run build
+        run: |
+          npm run build
+          echo "Build completed. Checking output..."
+          ls -la dist/bin/ || echo "dist/bin/ not found"
 
       - name: CDK Synth
         run: npx cdk synth --quiet
